@@ -1,0 +1,66 @@
+# Demo target for Chaos. Compose project: chaos-demo (see chaos.targets.yaml).
+# The API reaches MySQL and Redis THROUGH Toxiproxy so network faults apply.
+name: chaos-demo
+
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: demo
+      MYSQL_USER: demo
+      MYSQL_PASSWORD: demo
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', '127.0.0.1', '-udemo', '-pdemo']
+      interval: 3s
+      retries: 30
+    networks: [backend]
+
+  redis:
+    image: redis:7-alpine
+    networks: [backend]
+
+  toxiproxy:
+    image: ghcr.io/shopify/toxiproxy:2.12.0
+    command: ['-host=0.0.0.0', '-config=/config/toxiproxy.json']
+    volumes:
+      - ./toxiproxy.json:/config/toxiproxy.json:ro
+    ports:
+      - '127.0.0.1:8474:8474'
+    networks: [backend, edge]
+
+  api:
+    build:
+      context: ..
+      dockerfile: demo-target/api/Dockerfile
+    environment:
+      DB_HOST: toxiproxy
+      DB_PORT: '13306'
+      REDIS_URL: redis://toxiproxy:16379
+      METRICS_TOKEN: ${DEMO_METRICS_TOKEN:-demo-metrics-token}
+      # Set DEMO_BUG=1 to disable the cache -> DB fallback (scenario must fail)
+      DEMO_BUG_CACHE_NO_FALLBACK: ${DEMO_BUG:-0}
+    tmpfs:
+      - /tmp/chaos:size=64m,uid=1000
+    ports:
+      - '127.0.0.1:8081:3000'
+    restart: unless-stopped
+    depends_on:
+      mysql: { condition: service_healthy }
+      toxiproxy: { condition: service_started }
+    networks: [backend, edge]
+
+  web:
+    build:
+      context: ..
+      dockerfile: demo-target/web/Dockerfile
+    ports:
+      - '127.0.0.1:8080:80'
+    depends_on: [api]
+    networks: [edge]
+
+networks:
+  # No gateway: services only on this network cannot reach the internet.
+  backend:
+    internal: true
+  edge: {}

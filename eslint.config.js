@@ -19,7 +19,7 @@ export default [
     },
   },
   {
-    files: ['web/src/**/*.{js,jsx}', 'demo-target/web/src/**/*.{js,jsx}'],
+    files: ['web/**/*.{js,jsx}', 'demo-target/web/**/*.{js,jsx}'],
     languageOptions: {
       globals: { ...globals.browser },
       parserOptions: { ecmaFeatures: { jsx: true } },
@@ -32,6 +32,13 @@ export default [
   },
   {
     files: ['**/test/**', '**/*.test.{js,jsx}'],
+    languageOptions: {
+      globals: { ...globals.node, ...globals.browser },
+      parserOptions: { ecmaFeatures: { jsx: true } },
+    },
+  },
+  {
+    files: ['**/test/**'],
     languageOptions: { globals: { ...globals.node, ...globals.browser } },
   },
   prettier,
