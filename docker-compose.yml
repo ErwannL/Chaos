@@ -1,0 +1,27 @@
+# Chaos itself. Start the demo target separately:
+#   docker compose -f demo-target/docker-compose.yml up -d --build
+name: chaos
+
+services:
+  chaos:
+    build: .
+    # Host network: Chaos reaches targets on 127.0.0.1 (the loopback guard
+    # means what it says) and itself listens on 127.0.0.1:8090 only.
+    network_mode: host
+    env_file: [.env]
+    environment:
+      CHAOS_HOST: 127.0.0.1
+      CHAOS_PORT: '8090'
+    volumes:
+      # Chaos only acts on containers whose compose project label matches
+      # a target declared in chaos.targets.yaml.
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./chaos.targets.yaml:/config/chaos.targets.yaml:ro
+      - ./scenarios:/config/scenarios
+      - chaos-data:/data
+    # Leave time to revert active faults on `docker compose stop`.
+    stop_grace_period: 90s
+    restart: unless-stopped
+
+volumes:
+  chaos-data:
