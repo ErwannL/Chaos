@@ -1,0 +1,26 @@
+{
+  "name": "chaos-server",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "express": "^5.2.1",
+    "playwright-core": "1.56",
+    "yaml": "^2.9.1",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^5.0.2",
+    "vitest": "^5.0.2"
+  },
+  "description": "Chaos engineering tool for docker-compose stacks",
+  "bin": {
+    "chaos": "./bin/chaos.js"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "vitest run",
+    "coverage": "vitest run --coverage",
+    "test:integration": "CHAOS_IT=1 vitest run --config vitest.integration.config.js"
+  }
+}
