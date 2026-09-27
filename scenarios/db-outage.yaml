@@ -1,0 +1,15 @@
+name: db-outage
+description: MySQL becomes unreachable. Health must go 503, liveness stay 200, and recover.
+baselineS: 3
+recoveryS: 15
+watch: [/api/items]
+steps:
+  - fault: connection_reset
+    service: mysql
+    durationS: 12
+    params: { mode: disable }
+expectations:
+  - { type: status_during, probe: health, status: 503 }
+  - { type: status_during, probe: liveness, status: 200 }
+  - { type: status_component, component: db, state: down }
+  - { type: recovers_within, probe: health, status: 200, seconds: 10 }

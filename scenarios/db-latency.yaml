@@ -1,0 +1,12 @@
+name: db-latency
+description: 200 ms of latency (+/-50 ms) on MySQL. The API must keep answering.
+baselineS: 2
+recoveryS: 5
+steps:
+  - fault: latency
+    service: mysql
+    durationS: 10
+    params: { latencyMs: 200, jitterMs: 50 }
+expectations:
+  - { type: no_5xx, route: /api/items }
+  - { type: status_during, probe: liveness, status: 200 }

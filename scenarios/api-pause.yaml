@@ -1,0 +1,10 @@
+name: api-pause
+description: The API is frozen (docker pause) then unfrozen.
+baselineS: 2
+recoveryS: 10
+steps:
+  - fault: service_pause
+    service: api
+    durationS: 8
+expectations:
+  - { type: recovers_within, probe: liveness, status: 200, seconds: 5 }

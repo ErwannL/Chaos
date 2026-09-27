@@ -1,0 +1,10 @@
+name: frontend-missing-chunk
+description: A lazy JS chunk fails to load; the page must show an error, not a blank screen.
+baselineS: 1
+recoveryS: 2
+steps:
+  - fault: browser_missing_chunk
+    service: web
+    durationS: 6
+expectations:
+  - { type: frontend_error_shown, settleS: 2 }

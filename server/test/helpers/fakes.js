@@ -79,7 +79,11 @@ export function createFakeDockerApi({ containers = [], networks = {} } = {}) {
     if (parts[0] === 'exec') {
       const e = state.execs.get(parts[1]);
       if (parts[2] === 'start') {
-        e.result = state.execHandler(e.cmd, e.container);
+        try {
+          e.result = state.execHandler(e.cmd, e.container);
+        } catch (err) {
+          return { status: 500, body: { message: err.message } };
+        }
         return { status: 200, body: undefined, text: e.result.output };
       }
       return ok({ ExitCode: e.result.exitCode });

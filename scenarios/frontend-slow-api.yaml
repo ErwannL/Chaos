@@ -1,0 +1,11 @@
+name: frontend-slow-api
+description: API calls take 5 s in the browser; the page must stay usable.
+baselineS: 1
+recoveryS: 2
+steps:
+  - fault: browser_slow_api
+    service: web
+    durationS: 10
+    params: { delayMs: 5000, urlPattern: /api/ }
+expectations:
+  - { type: frontend_not_blank, settleS: 2 }

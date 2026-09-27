@@ -1,0 +1,5 @@
+targets:
+  - name: demo
+    project: chaos-demo
+    environment: production
+    services: [{ name: api, role: api }]

@@ -1,0 +1,25 @@
+# Chaos knows the target ONLY through this file.
+targets:
+  - name: demo
+    project: chaos-demo # compose project label: Chaos touches nothing else
+    environment: local # local | recette  (production/prod are always refused)
+    baseUrl: http://127.0.0.1:8080 # through nginx (web)
+    toxiproxy:
+      url: http://127.0.0.1:8474
+    services:
+      - { name: mysql, role: db, port: 3306, proxy: mysql }
+      - { name: redis, role: cache, port: 6379, proxy: redis }
+      - { name: api, role: api, port: 3000, diskPath: /tmp/chaos }
+      - { name: web, role: frontend, port: 80 }
+    probes:
+      health: http://127.0.0.1:8080/health
+      liveness: http://127.0.0.1:8080/livez
+      status:
+        url: http://127.0.0.1:8080/api/status
+        componentsPath: components
+      metrics:
+        url: http://127.0.0.1:8080/metrics
+        tokenEnv: DEMO_METRICS_TOKEN
+      intervalMs: 1000
+      timeoutMs: 1500
+    frontendUrl: http://127.0.0.1:8080

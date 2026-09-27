@@ -44,6 +44,7 @@ services:
       - /tmp/chaos:size=64m,uid=1000
     ports:
       - '127.0.0.1:8081:3000'
+    init: true # tini as PID 1: a crashed app exits the container -> restart policy
     restart: unless-stopped
     depends_on:
       mysql: { condition: service_healthy }
@@ -57,7 +58,9 @@ services:
     ports:
       - '127.0.0.1:8080:80'
     depends_on: [api]
-    networks: [edge]
+    # Reaches the API over the internal network, so probes through nginx keep
+    # working when the API loses its gateway network (egress_block).
+    networks: [edge, backend]
 
 networks:
   # No gateway: services only on this network cannot reach the internet.

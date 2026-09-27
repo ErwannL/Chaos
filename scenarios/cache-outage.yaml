@@ -1,0 +1,12 @@
+name: cache-outage
+description: Redis is cut. The API must fall back to MySQL (no 5xx). Fails with DEMO_BUG=1.
+baselineS: 3
+recoveryS: 5
+steps:
+  - fault: connection_reset
+    service: redis
+    durationS: 10
+expectations:
+  - { type: no_5xx, route: /api/items }
+  - { type: status_during, probe: health, status: 200 }
+  - { type: status_component, component: cache, state: [degraded, down] }

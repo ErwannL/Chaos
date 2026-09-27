@@ -169,6 +169,27 @@ describe('container faults', () => {
     expect(c.running).toBe(true);
   });
 
+  it('service_kill process_crash kills from inside the container', async () => {
+    const world = makeWorld();
+    const cmds = [];
+    world.dockerApi.state.execHandler = (cmd, c) => {
+      cmds.push(cmd);
+      c.running = false;
+      throw new Error('exec stream cut');
+    };
+    await roundTrip('service_kill', 'api', { method: 'process_crash', signal: 'SIGTERM' }, world);
+    expect(cmds).toEqual([['kill', '-15', '-1']]);
+    expect(world.dockerApi.state.containers.get('c-api').running).toBe(false);
+    const w2 = makeWorld();
+    const cmds2 = [];
+    w2.dockerApi.state.execHandler = (cmd) => {
+      cmds2.push(cmd);
+      return { exitCode: 0, output: '' };
+    };
+    await roundTrip('service_kill', 'api', { method: 'process_crash' }, w2);
+    expect(cmds2).toEqual([['kill', '-9', '-1']]);
+  });
+
   it('service_kill revert without state and with auto-restart', async () => {
     const world = makeWorld();
     world.dockerApi.state.containers.get('c-api').autoRestart = true;

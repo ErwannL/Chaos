@@ -1,0 +1,10 @@
+name: frontend-offline
+description: The browser goes offline; the page must show an error, not a blank screen.
+baselineS: 1
+recoveryS: 2
+steps:
+  - fault: browser_offline
+    service: web
+    durationS: 8
+expectations:
+  - { type: frontend_error_shown, settleS: 4 }

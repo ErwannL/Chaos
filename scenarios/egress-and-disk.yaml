@@ -1,0 +1,15 @@
+name: egress-and-disk
+description: The API loses internet egress, then its /tmp/chaos volume fills to 90 %.
+baselineS: 2
+recoveryS: 5
+steps:
+  - fault: egress_block
+    service: api
+    durationS: 8
+  - pause: 2
+  - fault: disk_pressure
+    service: api
+    durationS: 8
+    params: { targetPercent: 90, maxMb: 64 }
+expectations:
+  - { type: status_during, probe: liveness, status: 200 }

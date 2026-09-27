@@ -1,0 +1,12 @@
+name: api-crash
+description: The API process crashes; it must come back by itself (init + restart policy).
+baselineS: 3
+recoveryS: 10
+steps:
+  - fault: service_kill
+    service: api
+    durationS: 15
+    params: { method: process_crash }
+expectations:
+  - { type: service_restarts, service: api, seconds: 15, bySelf: true }
+  - { type: recovers_within, probe: liveness, status: 200, seconds: 10 }
