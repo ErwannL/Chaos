@@ -155,7 +155,7 @@ export class ScopedDocker {
     });
     check(started, 'exec start');
     const info = check(await this.api.request('GET', `/exec/${created.Id}/json`), 'exec inspect');
-    return { exitCode: info.ExitCode, output: started.text ?? '' };
+    return { exitCode: info.ExitCode, output: started.text };
   }
 
   async networks(id) {

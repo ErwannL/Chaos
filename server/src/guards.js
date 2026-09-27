@@ -31,7 +31,7 @@ export function isLoopbackHost(rawHost) {
 
 /** Every URL a target makes Chaos talk to. */
 export function targetUrls(target) {
-  const p = target.probes ?? {};
+  const p = target.probes;
   return [
     target.baseUrl,
     target.frontendUrl,
