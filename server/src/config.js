@@ -35,7 +35,7 @@ export function loadConfig(env = process.env, cwd = process.cwd()) {
   if (sessionSecret.length < MIN_SECRET)
     fail(`CHAOS_SESSION_SECRET must be >= ${MIN_SECRET} characters`);
   if (sessionSecret === ssoSecret) fail('CHAOS_SESSION_SECRET must differ from CHAOS_SSO_SECRET');
-  const port = Number(env.CHAOS_PORT ?? 8080);
+  const port = Number(env.CHAOS_PORT ?? 8090);
   if (!Number.isInteger(port) || port < 0 || port > 65535) fail('CHAOS_PORT is invalid');
   const dataDir = resolve(cwd, env.CHAOS_DATA_DIR ?? 'data');
   return {

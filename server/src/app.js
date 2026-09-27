@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import { ChaosError } from './errors.js';
 import { publicTarget } from './targets.js';
 import { targetVerdict } from './guards.js';
-import { parseScenario } from './scenarios.js';
+import { parseScenario, EXPECTATION_FIELDS } from './scenarios.js';
 import { createProber } from './probes.js';
 import { renderReportHtml } from './report-html.js';
 
@@ -55,6 +55,7 @@ export function createApp({ ctx, auth, config }) {
   api.get('/auth/me', (req, res) => res.json({ user: req.user, mode: auth.mode }));
 
   api.get('/catalog', (_req, res) => res.json(ctx.catalog.describe()));
+  api.get('/expectation-types', (_req, res) => res.json(EXPECTATION_FIELDS));
 
   api.get(
     '/targets',

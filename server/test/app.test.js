@@ -57,6 +57,8 @@ describe('HTTP API', () => {
     const { app, token } = makeAppEnv();
     const res = await request(app).get('/catalog').set(bearer(token));
     expect(res.body.map((f) => f.key)).toContain('disk_pressure');
+    const types = await request(app).get('/expectation-types').set(bearer(token));
+    expect(Object.keys(types.body)).toContain('no_5xx');
     expect(res.headers['content-security-policy']).toContain("frame-ancestors 'self'");
   });
 

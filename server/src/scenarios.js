@@ -11,16 +11,40 @@ const window = {
 };
 const probeName = z.enum(['health', 'liveness', 'status', 'metrics']);
 
-export const EXPECTATION_TYPES = [
-  'status_during',
-  'recovers_within',
-  'status_component',
-  'no_5xx',
-  'frontend_error_shown',
-  'frontend_not_blank',
-  'service_restarts',
-  'log_errors_below',
-];
+const PROBE = { type: 'enum', values: ['health', 'liveness', 'status', 'metrics'], required: true };
+const WINDOW = {
+  step: { type: 'integer', min: 0 },
+  settleS: { type: 'number', min: 0, max: 60 },
+};
+
+/** Field specs of each expectation type (drives the UI editor). */
+export const EXPECTATION_FIELDS = {
+  status_during: {
+    probe: PROBE,
+    status: { type: 'integer', required: true, default: 503 },
+    ...WINDOW,
+  },
+  recovers_within: {
+    probe: PROBE,
+    status: { type: 'integer', default: 200 },
+    seconds: { type: 'number', min: 0, max: 3600, required: true, default: 10 },
+  },
+  status_component: {
+    component: { type: 'string', required: true },
+    state: { type: 'string', required: true, default: 'down' },
+    ...WINDOW,
+  },
+  no_5xx: { route: { type: 'string', required: true, default: '/' }, ...WINDOW },
+  frontend_error_shown: WINDOW,
+  frontend_not_blank: WINDOW,
+  service_restarts: {
+    service: { type: 'string', required: true },
+    seconds: { type: 'number', min: 0, max: 600, required: true, default: 30 },
+    bySelf: { type: 'boolean', default: false },
+    ...WINDOW,
+  },
+  log_errors_below: { max: { type: 'number', min: 0, required: true, default: 0 }, ...WINDOW },
+};
 
 const expectationSchema = z.discriminatedUnion('type', [
   z

@@ -5,7 +5,7 @@ import { join } from 'node:path';
 import { createJournal } from '../src/journal.js';
 import { acquireRunLock } from '../src/lock.js';
 import { createStore } from '../src/store.js';
-import { createScenarioRepo, parseScenario } from '../src/scenarios.js';
+import { createScenarioRepo, parseScenario, EXPECTATION_FIELDS } from '../src/scenarios.js';
 import { recoverPending } from '../src/recovery.js';
 import { systemClock } from '../src/clock.js';
 import { createCatalog } from '../src/catalog/index.js';
@@ -145,6 +145,19 @@ describe('scenarios', () => {
     expect(() => repo.get('broken')).toThrow(/Invalid scenario/);
     expect(() => repo.get('nope')).toThrow(expect.objectContaining({ status: 404 }));
     expect(() => repo.save({ name: '../x', steps: [{ pause: 1 }] })).toThrow(/name/);
+  });
+
+  it('every expectation type has a field spec matching the schema', () => {
+    for (const [type, fields] of Object.entries(EXPECTATION_FIELDS)) {
+      const doc = { type };
+      for (const [k, f] of Object.entries(fields)) {
+        if (f.required)
+          doc[k] = f.type === 'enum' ? f.values[0] : (f.default ?? (f.type === 'string' ? 'x' : 1));
+      }
+      expect(() =>
+        parseScenario({ name: 'a', steps: [{ pause: 1 }], expectations: [doc] }),
+      ).not.toThrow();
+    }
   });
 
   it('validates steps and expectation types', () => {
