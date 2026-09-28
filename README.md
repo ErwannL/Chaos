@@ -1,3 +1,5 @@
+<p align="center"><img src="docs/assets/logo-animated.svg" width="140" alt="Chaos"></p>
+
 # Chaos
 
 Outil autonome d’ingénierie du chaos pour une application web conteneurisée

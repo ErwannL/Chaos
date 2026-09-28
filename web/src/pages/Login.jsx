@@ -22,7 +22,8 @@ export default function Login({ mode, onLogin }) {
   return (
     <Card className="mx-auto mt-20 max-w-sm">
       <form onSubmit={submit} className="flex flex-col gap-3">
-        <h1 className="text-xl font-bold">Chaos</h1>
+        <img src="/logo-animated.svg" alt="" className="mx-auto h-20 w-20" />
+        <h1 className="text-center text-xl font-bold">Chaos</h1>
         <Field label={t('username')}>
           <input className={INPUT} value={username} onChange={(e) => setUsername(e.target.value)} />
         </Field>

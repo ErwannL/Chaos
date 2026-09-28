@@ -98,7 +98,10 @@ function Shell({ user, onLogout }) {
   return (
     <div className="min-h-screen">
       <header className="sticky top-0 z-10 flex flex-wrap items-center gap-2 border-b border-neutral-200 bg-white/90 px-4 py-2 backdrop-blur dark:border-neutral-800 dark:bg-neutral-950/90">
-        <strong className="mr-4 text-lg">⚡ Chaos</strong>
+        <strong className="mr-4 flex items-center gap-2 text-lg">
+          <img src={runId ? '/logo-animated.svg' : '/logo.svg'} alt="" className="h-7 w-7" />
+          Chaos
+        </strong>
         {PAGES.map((p) => (
           <Button key={p} kind={page === p && !runId ? 'primary' : 'ghost'} onClick={() => go(p)}>
             {t(p)}
