@@ -4,15 +4,38 @@ import { ChaosError, GuardError } from '../errors.js';
 export const PROJECT_LABEL = 'com.docker.compose.project';
 export const SERVICE_LABEL = 'com.docker.compose.service';
 
-/** Minimal Docker Engine API client over the unix socket. */
-export function createDockerApi({ socketPath = '/var/run/docker.sock', timeoutMs = 30_000 } = {}) {
+const DEFAULT_SOCKET = '/var/run/docker.sock';
+
+/**
+ * Where the Docker Engine API is: `DOCKER_SOCKET` (a unix socket path or a
+ * `tcp://host:port`), else `DOCKER_HOST` (`unix://…` or `tcp://…`), else the
+ * default socket. Any other `DOCKER_HOST` scheme is refused, not guessed.
+ */
+export function dockerEndpoint(env = process.env) {
+  if (env.DOCKER_SOCKET) return env.DOCKER_SOCKET;
+  const host = env.DOCKER_HOST;
+  if (!host) return DEFAULT_SOCKET;
+  if (host.startsWith('unix://')) return host.slice('unix://'.length);
+  if (host.startsWith('tcp://')) return host;
+  throw new ChaosError('DOCKER_HOST', `Unsupported DOCKER_HOST scheme: ${host.split(':')[0]}`, 500);
+}
+
+/** `http.request` connection options for a socket path or a `tcp://host:port`. */
+function connectionOptions(endpoint) {
+  if (!endpoint.startsWith('tcp://')) return { socketPath: endpoint };
+  const url = new URL(endpoint);
+  return { host: url.hostname, port: Number(url.port || 2375) };
+}
+
+/** Minimal Docker Engine API client over a unix socket or plain TCP. */
+export function createDockerApi({ socketPath = DEFAULT_SOCKET, timeoutMs = 30_000 } = {}) {
   return {
     request(method, path, body) {
       return new Promise((resolve, reject) => {
         const payload = body === undefined ? undefined : JSON.stringify(body);
         const req = http.request(
           {
-            socketPath,
+            ...connectionOptions(socketPath),
             method,
             path: `/v1.43${path}`,
             timeout: timeoutMs,

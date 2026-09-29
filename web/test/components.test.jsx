@@ -62,6 +62,24 @@ describe('ProbeChart', () => {
     expect(container.querySelectorAll('.fill-red-500')).toHaveLength(3);
     expect(container.querySelectorAll('.fill-amber-500\\/20')).toHaveLength(2);
   });
+  it('marks a probe that did not answer (status null) as failing', () => {
+    const { container } = render(
+      <ProbeChart
+        samples={[
+          { ts: 1000, probe: 'health', status: 200 },
+          { ts: 2000, probe: 'health', status: null },
+          { ts: 1000, probe: 'db', running: true, paused: false },
+          { ts: 2000, probe: 'db', running: true, paused: true },
+          { ts: 3000, probe: 'db', running: false, paused: false },
+          { ts: 1000, probe: 'lat', blank: false },
+          { ts: 2000, probe: 'lat', blank: true },
+        ]}
+        windows={[]}
+      />,
+    );
+    // status null, paused, stopped and blank are all "not ok".
+    expect(container.querySelectorAll('.fill-red-500')).toHaveLength(4);
+  });
   it('renders nothing without samples', () => {
     const { container } = render(<ProbeChart samples={[]} windows={[]} />);
     expect(container.innerHTML).toBe('');

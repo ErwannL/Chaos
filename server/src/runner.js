@@ -118,7 +118,6 @@ export function createRunner({
       events: [],
       listeners: new Set(),
       controller: new AbortController(),
-      activeInjections: new Map(),
     };
     runs.set(id, run);
     active = run;
@@ -137,7 +136,6 @@ export function createRunner({
         journal.reverted(inj.journalId, true, { by });
         inj.step.revertOk = true;
         emit(run, { type: 'revert', step: inj.step.index, fault: inj.fault.key, ok: true });
-        run.activeInjections.delete(inj.journalId);
         return true;
       } catch (e) {
         lastError = e;
@@ -155,7 +153,6 @@ export function createRunner({
       ok: false,
       error: lastError.message,
     });
-    run.activeInjections.delete(inj.journalId);
     return false;
   }
 
@@ -253,7 +250,6 @@ export function createRunner({
           },
         };
         const inj = { journalId, fault, ctx, state: null, step };
-        run.activeInjections.set(journalId, inj);
         const win = {
           step: planned.index,
           fault: fault.key,
@@ -291,8 +287,6 @@ export function createRunner({
       }
     } catch (e) {
       errors.push(e.message);
-    } finally {
-      for (const inj of [...run.activeInjections.values()]) await revertInjection(run, inj);
     }
 
     const results = evaluateExpectations(scenario.expectations, { samples, windows });

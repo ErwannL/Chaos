@@ -9,7 +9,7 @@ export default defineConfig({
       include: ['src/**/*.js'],
       exclude: ['src/index.js'],
       reporter: ['text', 'json-summary'],
-      thresholds: { perFile: true, lines: 95, statements: 95, functions: 95, branches: 95 },
+      thresholds: { perFile: true, lines: 100, statements: 100, functions: 100, branches: 100 },
     },
   },
 });

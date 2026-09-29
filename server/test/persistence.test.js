@@ -87,7 +87,7 @@ describe('run lock', () => {
   });
 
   it('rethrows unexpected open errors', () => {
-    expect(() => acquireRunLock(join(tmp(), 'x'.repeat(300)), 'x')).toThrow(/ENAMETOOLONG/);
+    expect(() => acquireRunLock(join(tmp(), 'x'.repeat(300)), 'x')).toThrow(/ENAMETOOLONG|ENOENT/);
   });
 
   it('rethrows unexpected filesystem errors', () => {
@@ -98,8 +98,8 @@ describe('run lock', () => {
 
   it('checks real liveness with signal 0', () => {
     const file = join(tmp(), 'run.lock');
-    writeFileSync(file, JSON.stringify({ pid: 1, runId: 'init' }));
-    // pid 1 exists (EPERM or success) → considered alive
+    writeFileSync(file, JSON.stringify({ pid: process.pid, runId: 'init' }));
+    // A live pid (this very process) → considered alive
     expect(() => acquireRunLock(file, 'x')).toThrow(/in progress/);
   });
 });

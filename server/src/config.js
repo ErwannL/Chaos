@@ -2,6 +2,7 @@ import { randomBytes } from 'node:crypto';
 import { resolve } from 'node:path';
 import { ChaosError } from './errors.js';
 import { isLoopbackHost } from './guards.js';
+import { dockerEndpoint } from './drivers/docker.js';
 
 const MIN_SECRET = 32;
 
@@ -45,7 +46,7 @@ export function loadConfig(env = process.env, cwd = process.cwd()) {
     targetsFile: resolve(cwd, env.CHAOS_TARGETS_FILE ?? 'chaos.targets.yaml'),
     scenariosDir: resolve(cwd, env.CHAOS_SCENARIOS_DIR ?? 'scenarios'),
     webDir: env.CHAOS_WEB_DIR ? resolve(cwd, env.CHAOS_WEB_DIR) : null,
-    dockerSocket: env.DOCKER_SOCKET ?? '/var/run/docker.sock',
+    dockerSocket: dockerEndpoint(env),
     frameAncestors: env.CHAOS_FRAME_ANCESTORS ?? "'self'",
     sessionTtlS: Number(env.CHAOS_SESSION_TTL_S ?? 8 * 3600),
     auth: { ...auth, sessionSecret },

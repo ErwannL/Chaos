@@ -266,6 +266,23 @@ describe('RunView', () => {
     await waitFor(() => expect(f.mock.calls.some((c) => c[0] === '/runs/r1/abort')).toBe(true));
   });
 
+  it('shows a failed revert with its error in the log', async () => {
+    mockFetch({
+      'GET /runs/r4': () => ({
+        ok: true,
+        status: 200,
+        body: sseBody([
+          ...EVENTS,
+          { type: 'revert', ts: 3000, fault: 'latency', ok: false, error: 'toxiproxy exploded' },
+          { type: 'revert', ts: 3100, fault: 'latency', ok: true },
+        ]),
+      }),
+    });
+    renderI18n(<RunView id="r4" onReport={() => {}} />, 'en');
+    expect(await screen.findByText(/✗ toxiproxy exploded/)).toBeInTheDocument();
+    expect(screen.getByText(/revert latency ✓|revert latency.*✓/)).toBeInTheDocument();
+  });
+
   it('links to the report once finished and reports stream errors', async () => {
     const onReport = vi.fn();
     mockFetch({

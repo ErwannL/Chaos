@@ -78,6 +78,7 @@ Développement de l’UI : `npm run dev -w web` (Vite relaie l’API vers `:8090
 | `CHAOS_HOST` / `CHAOS_PORT`                                   | Adresse d’écoute : loopback **obligatoire**, `127.0.0.1:8090` par défaut.                                                                                             |
 | `CHAOS_TARGETS_FILE`, `CHAOS_SCENARIOS_DIR`, `CHAOS_DATA_DIR` | Emplacement de la config des cibles, des scénarios, du journal et des rapports.                                                                                       |
 | `DOCKER_SOCKET`                                               | Socket Docker (`/var/run/docker.sock` par défaut).                                                                                                                    |
+| `DOCKER_HOST`                                                 | Repli de `DOCKER_SOCKET` : `unix:///chemin` ou `tcp://hôte:port` (port 2375 par défaut). Tout autre schéma est refusé.                                                |
 
 Le serveur refuse de démarrer si ces règles ne sont pas respectées (secret
 trop court, secrets identiques, hôte non loopback…).

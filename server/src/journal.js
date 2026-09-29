@@ -13,7 +13,8 @@ export function createJournal({ file, clock = { now: Date.now } }) {
   function append(event) {
     const line = JSON.stringify({ ts: new Date(clock.now()).toISOString(), ...event }) + '\n';
     appendFileSync(file, line);
-    const fd = openSync(file, 'r');
+    // Write-capable descriptor: Windows refuses fsync on a read-only one (EPERM).
+    const fd = openSync(file, 'a');
     try {
       fsyncSync(fd);
     } finally {

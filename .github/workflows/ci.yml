@@ -23,7 +23,7 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: npm }
       - run: npm ci
-      # >= 95 % lines/branches/functions/statements PER FILE, every workspace
+      # 100 % lines/branches/functions/statements PER FILE, every workspace
       - run: npm run coverage
       # The tests must be able to fail: break each guard, expect red.
       - run: npm run test:mutation

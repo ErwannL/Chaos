@@ -3,7 +3,7 @@ import http from 'node:http';
 import { mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { createDockerApi, ScopedDocker } from '../src/drivers/docker.js';
+import { createDockerApi, dockerEndpoint, ScopedDocker } from '../src/drivers/docker.js';
 import { createFakeDockerApi, projectContainer } from './helpers/fakes.js';
 
 function setup() {
@@ -150,7 +150,11 @@ describe('createDockerApi (unix socket transport)', () => {
   afterEach(() => server?.close());
 
   async function listen(handler) {
-    const socketPath = join(mkdtempSync(join(tmpdir(), 'dk-')), 'd.sock');
+    // Named pipe on Windows (Node's unix sockets need not be creatable there).
+    const socketPath =
+      process.platform === 'win32'
+        ? String.raw`\\.\pipe\chaos-dk-${String(process.pid)}-${String(Math.random()).slice(2)}`
+        : join(mkdtempSync(join(tmpdir(), 'dk-')), 'd.sock');
     server = http.createServer(handler);
     await new Promise((r) => server.listen(socketPath, r));
     return socketPath;
@@ -187,5 +191,36 @@ describe('createDockerApi (unix socket transport)', () => {
       createDockerApi({ socketPath, timeoutMs: 50 }).request('GET', '/slow'),
     ).rejects.toThrow(/timed out/);
     expect(createDockerApi()).toHaveProperty('request');
+  });
+
+  it('talks plain TCP for a tcp:// endpoint (default port 2375 when none)', async () => {
+    server = http.createServer((req, res) => res.end(JSON.stringify({ url: req.url })));
+    await new Promise((r) => server.listen(0, '127.0.0.1', r));
+    const { port } = server.address();
+    const r = await createDockerApi({ socketPath: `tcp://127.0.0.1:${String(port)}` }).request(
+      'GET',
+      '/info',
+    );
+    expect(r.body).toEqual({ url: '/v1.43/info' });
+    // No port → 2375, where nothing listens here: a refused connection, not a crash.
+    await expect(
+      createDockerApi({ socketPath: 'tcp://127.0.0.1' }).request('GET', '/x'),
+    ).rejects.toThrow();
+  });
+});
+
+describe('dockerEndpoint', () => {
+  it('prefers DOCKER_SOCKET, then reads DOCKER_HOST (unix:// or tcp://), else the default', () => {
+    expect(dockerEndpoint({ DOCKER_SOCKET: '/a.sock', DOCKER_HOST: 'tcp://h:1' })).toBe('/a.sock');
+    expect(dockerEndpoint({ DOCKER_HOST: 'unix:///run/d.sock' })).toBe('/run/d.sock');
+    expect(dockerEndpoint({ DOCKER_HOST: 'tcp://proxy:2375' })).toBe('tcp://proxy:2375');
+    expect(dockerEndpoint({})).toBe('/var/run/docker.sock');
+    expect(dockerEndpoint()).toEqual(expect.any(String));
+  });
+
+  it('refuses a DOCKER_HOST scheme it cannot speak instead of guessing', () => {
+    expect(() => dockerEndpoint({ DOCKER_HOST: 'ssh://me@box' })).toThrow(
+      /Unsupported DOCKER_HOST scheme: ssh/,
+    );
   });
 });

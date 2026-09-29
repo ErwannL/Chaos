@@ -4,6 +4,7 @@ import { createContext } from './context.js';
 import { createAuth } from './auth.js';
 import { createApp } from './app.js';
 import { recoverPending } from './recovery.js';
+import { dockerEndpoint } from './drivers/docker.js';
 
 /** Starts the HTTP server after reverting anything a crash left injected. */
 export async function startServer({
@@ -44,7 +45,7 @@ export function cliContext(env = process.env, overrides = {}) {
     dataDir: resolve(env.CHAOS_DATA_DIR ?? 'data'),
     targetsFile: resolve(env.CHAOS_TARGETS_FILE ?? 'chaos.targets.yaml'),
     scenariosDir: resolve(env.CHAOS_SCENARIOS_DIR ?? 'scenarios'),
-    dockerSocket: env.DOCKER_SOCKET ?? '/var/run/docker.sock',
+    dockerSocket: dockerEndpoint(env),
     log: () => {},
     ...overrides,
   });

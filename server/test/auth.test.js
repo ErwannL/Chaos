@@ -1,6 +1,7 @@
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 import { describe, it, expect } from 'vitest';
+import { resolve } from 'node:path';
 import { loadConfig } from '../src/config.js';
 import { createAuth } from '../src/auth.js';
 import { signHs256, verifyHs256 } from '../src/jwt.js';
@@ -17,10 +18,17 @@ const localEnv = { CHAOS_LOCAL_USER: 'admin', CHAOS_LOCAL_PASSWORD: 'correct hor
 describe('config', () => {
   it('defaults to loopback and resolves paths', () => {
     const c = loadConfig(localEnv, '/srv');
-    expect(c).toMatchObject({ host: '127.0.0.1', port: 8090, dataDir: '/srv/data', webDir: null });
+    expect(c).toMatchObject({
+      host: '127.0.0.1',
+      port: 8090,
+      dataDir: resolve('/srv/data'),
+      webDir: null,
+    });
     expect(c.auth.mode).toBe('local');
     expect(c.auth.sessionSecret.length).toBeGreaterThanOrEqual(32);
-    expect(loadConfig({ ...localEnv, CHAOS_WEB_DIR: 'web' }, '/srv').webDir).toBe('/srv/web');
+    expect(loadConfig({ ...localEnv, CHAOS_WEB_DIR: 'web' }, '/srv').webDir).toBe(
+      resolve('/srv/web'),
+    );
   });
 
   it.each([
