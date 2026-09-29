@@ -7,7 +7,11 @@ function componentsFrom(json, path) {
   const norm = (v) =>
     String(typeof v === 'object' && v !== null ? (v.status ?? v.state) : v).toLowerCase();
   if (Array.isArray(node)) {
-    for (const c of node) if (c && c.name) out[c.name] = norm(c);
+    // `name` (générique) ou `key` (Orqea : clef immuable du composant).
+    for (const c of node) {
+      const id = c?.name ?? c?.key;
+      if (id) out[id] = norm(c);
+    }
   } else if (node && typeof node === 'object') {
     for (const [k, v] of Object.entries(node)) out[k] = norm(v);
   }

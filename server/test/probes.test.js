@@ -29,6 +29,11 @@ describe('probes', () => {
     expect(
       c({ a: { list: [{ name: 'db', status: 'ok' }, { status: 'x' }, null] } }, 'a.list'),
     ).toEqual({ db: 'ok' });
+    expect(
+      c({ components: [{ key: 'database', status: 'operational' }, { key: '' }] }, 'components'),
+    ).toEqual({
+      database: 'operational',
+    });
     expect(c(null, 'components')).toEqual({});
     expect(c('weird', '')).toEqual({});
   });
