@@ -2,6 +2,10 @@ import { createContext, useContext, useState } from 'react';
 
 const fr = {
   appTitle: 'Chaos',
+  byline: 'par Orqea',
+  poweredBy: 'Propulsé par Orqea',
+  author: 'Développé par Erwann Laplante',
+  authorNewTab: 'Développé par Erwann Laplante (nouvel onglet)',
   targets: 'Cibles',
   catalog: 'Catalogue',
   scenarios: 'Scénarios',
@@ -77,6 +81,10 @@ const fr = {
 
 const en = {
   appTitle: 'Chaos',
+  byline: 'by Orqea',
+  poweredBy: 'Powered by Orqea',
+  author: 'Developed by Erwann Laplante',
+  authorNewTab: 'Developed by Erwann Laplante (new tab)',
   targets: 'Targets',
   catalog: 'Catalog',
   scenarios: 'Scenarios',

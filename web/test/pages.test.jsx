@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import { act, cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import Login from '../src/pages/Login.jsx';
@@ -47,8 +48,28 @@ describe('Login', () => {
   });
 
   it('tells SSO users to come from the console', () => {
-    renderI18n(<Login mode="sso" />);
+    const { container } = renderI18n(<Login mode="sso" />);
     expect(screen.getByText(/console d’administration/)).toBeInTheDocument();
+    expect(screen.getByText('par Orqea')).toBeInTheDocument();
+    expect(screen.getByText('Propulsé par Orqea')).toHaveAttribute('target', '_top');
+    expect(screen.getByText('Développé par Erwann Laplante')).toHaveAttribute(
+      'href',
+      'https://github.com/ErwannL',
+    );
+    const marks = [...container.querySelectorAll('.logo-hover img')].map((i) =>
+      i.getAttribute('src'),
+    );
+    expect(marks).toEqual(['/logo.svg', '/logo-animated.svg']);
+  });
+
+  it('the local login screen is branded too, the logo animating on hover only', () => {
+    const { container } = renderI18n(<Login mode="local" onLogin={vi.fn()} />);
+    expect(screen.getByText('par Orqea')).toBeInTheDocument();
+    expect(screen.getByText('Propulsé par Orqea')).toBeInTheDocument();
+    expect(container.querySelector('.logo-hover')).not.toHaveAttribute('data-animated');
+    const css = readFileSync('src/index.css', 'utf8');
+    expect(css).toContain('.logo-hover:hover .logo-animated');
+    expect(css).toMatch(/prefers-reduced-motion: reduce\)\s*\{\s*\.logo-hover/);
   });
 });
 

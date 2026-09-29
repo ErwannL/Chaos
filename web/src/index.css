@@ -1,2 +1,31 @@
 @import 'tailwindcss';
 @custom-variant dark (&:where(.dark, .dark *));
+
+/* Logo : le logo animé remplace le statique au survol (jamais sous mouvement réduit). */
+.logo-hover {
+  position: relative;
+  display: inline-block;
+}
+.logo-hover .logo-animated {
+  position: absolute;
+  inset: 0;
+  visibility: hidden;
+}
+.logo-hover:hover .logo-animated,
+.logo-hover[data-animated] .logo-animated {
+  visibility: visible;
+}
+.logo-hover:hover .logo-static,
+.logo-hover[data-animated] .logo-static {
+  visibility: hidden;
+}
+@media (prefers-reduced-motion: reduce) {
+  .logo-hover:hover .logo-animated,
+  .logo-hover[data-animated] .logo-animated {
+    visibility: hidden;
+  }
+  .logo-hover:hover .logo-static,
+  .logo-hover[data-animated] .logo-static {
+    visibility: visible;
+  }
+}

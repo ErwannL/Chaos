@@ -64,6 +64,13 @@ describe('App', () => {
     const f = mockFetch({ ...BASE, 'POST /abort-all': { aborted: null } });
     render(<App />);
     expect(await screen.findByText('demo')).toBeInTheDocument();
+    expect(screen.getByText('by Orqea')).toBeInTheDocument();
+    const owner = screen.getByText('Powered by Orqea');
+    expect(owner).toHaveAttribute('href', 'https://orqea.dev');
+    expect(owner).toHaveAttribute('target', '_top');
+    const author = screen.getByRole('link', { name: 'Developed by Erwann Laplante (new tab)' });
+    expect(author).toHaveAttribute('href', 'https://github.com/ErwannL');
+    expect(author).toHaveAttribute('rel', 'noreferrer noopener');
     for (const p of ['Catalog', 'Scenarios', 'Reports', 'Journal', 'Targets']) {
       fireEvent.click(screen.getByText(p, { selector: 'button' }));
     }
