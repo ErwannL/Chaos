@@ -67,6 +67,11 @@ describe('App', () => {
     expect(await screen.findByText('demo')).toBeInTheDocument();
     expect(screen.getByText('by Orqea')).toBeInTheDocument();
     const owner = screen.getByText('Powered by Orqea');
+    // les deux lignes sont DANS l'en-tête, sous le nom « Chaos by Orqea »
+    const brand = owner.closest('.brand');
+    expect(brand.querySelector('h1')).toHaveTextContent('Chaos by Orqea');
+    expect(brand.querySelector('h1').nextElementSibling).toContainElement(owner);
+    expect(brand.closest('header')).not.toBeNull();
     expect(owner).toHaveAttribute('href', 'https://orqea.dev');
     expect(owner).toHaveAttribute('target', '_top');
     const author = screen.getByRole('link', { name: 'Developed by Erwann Laplante' });
@@ -120,7 +125,7 @@ describe('App', () => {
 
   it('animates the logo on keyboard focus too, still under reduced motion', () => {
     const css = readFileSync('src/index.css', 'utf8');
-    expect(css).toContain(':is(header, form, .brand-head):focus-within .logo-hover .logo-animated');
+    expect(css).toContain(':is(.brand, .brand-head):focus-within .logo-hover .logo-animated');
     expect(css).toContain('prefers-reduced-motion: reduce');
   });
 

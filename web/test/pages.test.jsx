@@ -52,6 +52,9 @@ describe('Login', () => {
     expect(screen.getByText(/console d’administration/)).toBeInTheDocument();
     expect(screen.getByText('par Orqea')).toBeInTheDocument();
     expect(screen.getByText('Propulsé par Orqea')).toHaveAttribute('target', '_top');
+    expect(screen.getByText('Propulsé par Orqea').closest('.brand')).toContainElement(
+      screen.getByText('par Orqea'),
+    );
     expect(screen.getByText('Développé par Erwann Laplante')).toHaveAttribute(
       'href',
       'https://github.com/ErwannL',
@@ -65,7 +68,9 @@ describe('Login', () => {
   it('the local login screen is branded too, the logo animating on hover only', () => {
     const { container } = renderI18n(<Login mode="local" onLogin={vi.fn()} />);
     expect(screen.getByText('par Orqea')).toBeInTheDocument();
-    expect(screen.getByText('Propulsé par Orqea')).toBeInTheDocument();
+    expect(screen.getByText('Propulsé par Orqea').closest('.brand')).toContainElement(
+      screen.getByText('par Orqea'),
+    );
     expect(container.querySelector('.logo-hover')).not.toHaveAttribute('data-animated');
     const css = readFileSync('src/index.css', 'utf8');
     expect(css).toContain('.logo-hover:hover .logo-animated');

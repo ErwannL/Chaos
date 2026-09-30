@@ -21,13 +21,18 @@ export function HoverLogo({ className = '', animated = false }) {
   );
 }
 
-/** « Propulsé par Orqea » (même onglet, cadre du haut) et « Développé par Erwann Laplante ». */
+/** « Propulsé par Orqea » (même onglet, cadre du haut) et « Développé par Erwann Laplante », empilés. */
 export function Credits({ className = '' }) {
   const { t } = useI18n();
   const orqeaUrl = useContext(OrqeaUrl);
   return (
-    <span className={`flex gap-2 text-xs text-neutral-500 ${className}`}>
-      <a href={orqeaUrl} target="_top" data-credit="owner">
+    <span className={`flex flex-col text-xs leading-tight ${className}`}>
+      <a
+        href={orqeaUrl}
+        target="_top"
+        data-credit="owner"
+        className="font-semibold text-neutral-600 hover:underline dark:text-neutral-300"
+      >
         {t('poweredBy')}
       </a>
       <a
@@ -36,10 +41,31 @@ export function Credits({ className = '' }) {
         rel="noreferrer noopener"
         aria-label={t('author')}
         data-credit="author"
+        className="text-neutral-500 hover:underline"
       >
         {t('author')}
       </a>
     </span>
+  );
+}
+
+/**
+ * L'en-tête de marque : logo (animé au survol / au focus clavier), « Chaos par Orqea » puis,
+ * SOUS le nom, les deux lignes de crédits. `centered` : écran de connexion / avis SSO.
+ */
+export function Brand({ animated = false, centered = false }) {
+  const { t } = useI18n();
+  const size = centered ? 'h-20 w-20' : 'h-9 w-9';
+  return (
+    <div className={`brand flex items-center gap-3 ${centered ? 'flex-col text-center' : 'mr-4'}`}>
+      <HoverLogo className={`${size} shrink-0`} animated={animated} />
+      <div className={`flex flex-col ${centered ? 'items-center' : ''}`}>
+        <h1 className="text-lg font-bold leading-tight">
+          Chaos <span className="text-sm font-normal text-neutral-500">{t('byline')}</span>
+        </h1>
+        <Credits />
+      </div>
+    </div>
   );
 }
 

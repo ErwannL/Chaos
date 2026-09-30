@@ -2,13 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { api, session, takeSsoFromHash } from './api.js';
 import { I18nProvider, useI18n } from './i18n.jsx';
 import { Button, ErrorBox } from './components/ui.jsx';
-import {
-  BackToOrqea,
-  Credits,
-  DEFAULT_ORQEA_URL,
-  HoverLogo,
-  OrqeaUrl,
-} from './components/brand.jsx';
+import { BackToOrqea, Brand, DEFAULT_ORQEA_URL, OrqeaUrl } from './components/brand.jsx';
 import Login from './pages/Login.jsx';
 import Targets from './pages/Targets.jsx';
 import Catalog from './pages/Catalog.jsx';
@@ -105,11 +99,7 @@ function Shell({ user }) {
   return (
     <div className="min-h-screen">
       <header className="sticky top-0 z-10 flex flex-wrap items-center gap-2 border-b border-neutral-200 bg-white/90 px-4 py-2 backdrop-blur dark:border-neutral-800 dark:bg-neutral-950/90">
-        <strong className="mr-4 flex items-center gap-2 text-lg">
-          <HoverLogo className="h-7 w-7" animated={Boolean(runId)} />
-          Chaos
-          <span className="text-sm font-normal text-neutral-500">{t('byline')}</span>
-        </strong>
+        <Brand animated={Boolean(runId)} />
         {PAGES.map((p) => (
           <Button key={p} kind={page === p && !runId ? 'primary' : 'ghost'} onClick={() => go(p)}>
             {t(p)}
@@ -122,7 +112,6 @@ function Shell({ user }) {
         <Button aria-label={t('theme')} onClick={() => setDark(!dark)}>
           {dark ? '☀' : '☾'}
         </Button>
-        <Credits />
         <span className="text-sm text-neutral-500">{user.name}</span>
         <BackToOrqea />
         <Button kind="danger" onClick={abortAll}>

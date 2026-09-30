@@ -11,23 +11,23 @@
   inset: 0;
   visibility: hidden;
 }
-:is(header, form, .brand-head):focus-within .logo-hover .logo-animated,
+:is(.brand, .brand-head):focus-within .logo-hover .logo-animated,
 .logo-hover:hover .logo-animated,
 .logo-hover[data-animated] .logo-animated {
   visibility: visible;
 }
-:is(header, form, .brand-head):focus-within .logo-hover .logo-static,
+:is(.brand, .brand-head):focus-within .logo-hover .logo-static,
 .logo-hover:hover .logo-static,
 .logo-hover[data-animated] .logo-static {
   visibility: hidden;
 }
 @media (prefers-reduced-motion: reduce) {
-  :is(header, form, .brand-head):focus-within .logo-hover .logo-animated,
+  :is(.brand, .brand-head):focus-within .logo-hover .logo-animated,
   .logo-hover:hover .logo-animated,
   .logo-hover[data-animated] .logo-animated {
     visibility: hidden;
   }
-  :is(header, form, .brand-head):focus-within .logo-hover .logo-static,
+  :is(.brand, .brand-head):focus-within .logo-hover .logo-static,
   .logo-hover:hover .logo-static,
   .logo-hover[data-animated] .logo-static {
     visibility: visible;
