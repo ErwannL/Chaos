@@ -69,7 +69,7 @@ describe('App', () => {
     const owner = screen.getByText('Powered by Orqea');
     expect(owner).toHaveAttribute('href', 'https://orqea.dev');
     expect(owner).toHaveAttribute('target', '_top');
-    const author = screen.getByRole('link', { name: 'Developed by Erwann Laplante (new tab)' });
+    const author = screen.getByRole('link', { name: 'Developed by Erwann Laplante' });
     expect(author).toHaveAttribute('href', 'https://github.com/ErwannL');
     expect(author).toHaveAttribute('rel', 'noreferrer noopener');
     for (const p of ['Catalog', 'Scenarios', 'Reports', 'Journal', 'Targets']) {

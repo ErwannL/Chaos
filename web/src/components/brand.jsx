@@ -34,7 +34,7 @@ export function Credits({ className = '' }) {
         href={AUTHOR_URL}
         target="_blank"
         rel="noreferrer noopener"
-        aria-label={t('authorNewTab')}
+        aria-label={t('author')}
         data-credit="author"
       >
         {t('author')}
