@@ -45,7 +45,8 @@ export function createApp({ ctx, auth, config }) {
 
   const api = express.Router();
 
-  api.get('/auth/mode', (_req, res) => res.json({ mode: auth.mode }));
+  // `orqeaUrl`: where « Revenir sur Orqea » leads in THIS environment (CHAOS_ORQEA_URL).
+  api.get('/auth/mode', (_req, res) => res.json({ mode: auth.mode, orqeaUrl: config.orqeaUrl }));
   api.post('/auth/sso', (req, res) => res.json(auth.exchangeSso(req.body?.token)));
   api.post('/auth/login', (req, res) =>
     res.json(auth.loginLocal(String(req.body?.username ?? ''), String(req.body?.password ?? ''))),

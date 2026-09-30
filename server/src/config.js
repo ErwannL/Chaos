@@ -36,6 +36,8 @@ export function loadConfig(env = process.env, cwd = process.cwd()) {
   if (sessionSecret.length < MIN_SECRET)
     fail(`CHAOS_SESSION_SECRET must be >= ${MIN_SECRET} characters`);
   if (sessionSecret === ssoSecret) fail('CHAOS_SESSION_SECRET must differ from CHAOS_SSO_SECRET');
+  const orqeaUrl = env.CHAOS_ORQEA_URL ?? 'https://orqea.dev';
+  if (!/^https?:\/\//.test(orqeaUrl)) fail('CHAOS_ORQEA_URL must be an http(s) URL');
   const port = Number(env.CHAOS_PORT ?? 8090);
   if (!Number.isInteger(port) || port < 0 || port > 65535) fail('CHAOS_PORT is invalid');
   const dataDir = resolve(cwd, env.CHAOS_DATA_DIR ?? 'data');
@@ -47,6 +49,7 @@ export function loadConfig(env = process.env, cwd = process.cwd()) {
     scenariosDir: resolve(cwd, env.CHAOS_SCENARIOS_DIR ?? 'scenarios'),
     webDir: env.CHAOS_WEB_DIR ? resolve(cwd, env.CHAOS_WEB_DIR) : null,
     dockerSocket: dockerEndpoint(env),
+    orqeaUrl,
     frameAncestors: env.CHAOS_FRAME_ANCESTORS ?? "'self'",
     sessionTtlS: Number(env.CHAOS_SESSION_TTL_S ?? 8 * 3600),
     auth: { ...auth, sessionSecret },

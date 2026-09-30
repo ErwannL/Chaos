@@ -56,7 +56,7 @@ describe('server bootstrap', () => {
     ]);
     expect(logs[0]).toMatch(/recovery: latency on demo\/mysql: reverted/);
     const res = await fetch(`http://127.0.0.1:${server.address().port}/auth/mode`);
-    expect(await res.json()).toEqual({ mode: 'local' });
+    expect(await res.json()).toEqual({ mode: 'local', orqeaUrl: 'https://orqea.dev' });
     await handlers.SIGTERM();
     await handlers.SIGINT();
     await shutdown('again');

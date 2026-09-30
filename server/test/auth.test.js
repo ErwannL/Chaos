@@ -31,6 +31,13 @@ describe('config', () => {
     );
   });
 
+  it('takes the Orqea URL of the environment, orqea.dev by default', () => {
+    expect(loadConfig(localEnv).orqeaUrl).toBe('https://orqea.dev');
+    expect(loadConfig({ ...localEnv, CHAOS_ORQEA_URL: 'http://localhost:3002' }).orqeaUrl).toBe(
+      'http://localhost:3002',
+    );
+  });
+
   it.each([
     [{ ...localEnv, CHAOS_HOST: '0.0.0.0' }, /loopback/],
     [{ ...localEnv, CHAOS_PORT: 'x' }, /CHAOS_PORT/],
@@ -42,6 +49,7 @@ describe('config', () => {
     [{ ...ssoEnv, CHAOS_SESSION_SECRET: SSO }, /must differ/],
     [{ ...ssoEnv, CHAOS_SSO_ISSUERS: ' ' }, /CHAOS_SSO_ISSUERS/],
     [{ ...ssoEnv, CHAOS_SSO_ISSUERS: undefined }, /CHAOS_SSO_ISSUERS/],
+    [{ ...localEnv, CHAOS_ORQEA_URL: 'javascript:alert(1)' }, /CHAOS_ORQEA_URL/],
   ])('refuses invalid config %#', (env, re) => {
     expect(() => loadConfig(env)).toThrow(re);
   });

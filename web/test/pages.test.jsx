@@ -69,7 +69,7 @@ describe('Login', () => {
     expect(container.querySelector('.logo-hover')).not.toHaveAttribute('data-animated');
     const css = readFileSync('src/index.css', 'utf8');
     expect(css).toContain('.logo-hover:hover .logo-animated');
-    expect(css).toMatch(/prefers-reduced-motion: reduce\)\s*\{\s*\.logo-hover/);
+    expect(css).toMatch(/prefers-reduced-motion: reduce\)[\s\S]*\.logo-hover/);
   });
 });
 

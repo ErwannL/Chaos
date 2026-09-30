@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { api, session } from '../api.js';
 import { useI18n } from '../i18n.jsx';
 import { Button, Card, ErrorBox, Field, INPUT } from '../components/ui.jsx';
-import { Credits, HoverLogo } from '../components/brand.jsx';
+import { BackToOrqea, Credits, HoverLogo } from '../components/brand.jsx';
 
 /** Logo, « Chaos par Orqea » : l'en-tête de l'écran de connexion comme de l'avis SSO. */
 function BrandHead() {
@@ -25,9 +25,10 @@ export default function Login({ mode, onLogin }) {
   if (mode === 'sso')
     return (
       <Card className="mx-auto mt-20 max-w-sm">
-        <div className="flex flex-col gap-3 text-center">
+        <div className="brand-head flex flex-col items-center gap-3 text-center">
           <BrandHead />
           <p>{t('ssoOnly')}</p>
+          <BackToOrqea />
           <Credits className="justify-center" />
         </div>
       </Card>

@@ -67,18 +67,19 @@ Développement de l’UI : `npm run dev -w web` (Vite relaie l’API vers `:8090
 
 ### Variables d’environnement (`.env`)
 
-| Variable                                                      | Rôle                                                                                                                                                                  |
-| ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `CHAOS_LOCAL_USER`, `CHAOS_LOCAL_PASSWORD`                    | Compte local unique, utilisé quand le SSO n’est pas configuré.                                                                                                        |
-| `CHAOS_SSO_SECRET`                                            | Secret HS256 partagé avec la console d’administration (≥ 32 caractères). Active le SSO et désactive le compte local.                                                  |
-| `CHAOS_SSO_ISSUERS`                                           | Valeurs `iss` acceptées, séparées par des virgules (obligatoire avec le SSO).                                                                                         |
-| `CHAOS_SESSION_SECRET`                                        | Signe les sessions Chaos. Doit **différer** de `CHAOS_SSO_SECRET` (≥ 32 caractères). Obligatoire avec le SSO ; sinon un secret aléatoire est tiré à chaque démarrage. |
-| `CHAOS_SESSION_TTL_S`                                         | Durée de session (8 h par défaut).                                                                                                                                    |
-| `CHAOS_FRAME_ANCESTORS`                                       | Origines autorisées à intégrer Chaos en iframe (CSP `frame-ancestors`).                                                                                               |
-| `CHAOS_HOST` / `CHAOS_PORT`                                   | Adresse d’écoute : loopback **obligatoire**, `127.0.0.1:8090` par défaut.                                                                                             |
-| `CHAOS_TARGETS_FILE`, `CHAOS_SCENARIOS_DIR`, `CHAOS_DATA_DIR` | Emplacement de la config des cibles, des scénarios, du journal et des rapports.                                                                                       |
-| `DOCKER_SOCKET`                                               | Socket Docker (`/var/run/docker.sock` par défaut).                                                                                                                    |
-| `DOCKER_HOST`                                                 | Repli de `DOCKER_SOCKET` : `unix:///chemin` ou `tcp://hôte:port` (port 2375 par défaut). Tout autre schéma est refusé.                                                |
+| Variable                                                      | Rôle                                                                                                                                                                     |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `CHAOS_LOCAL_USER`, `CHAOS_LOCAL_PASSWORD`                    | Compte local unique, utilisé quand le SSO n’est pas configuré.                                                                                                           |
+| `CHAOS_SSO_SECRET`                                            | Secret HS256 partagé avec la console d’administration (≥ 32 caractères). Active le SSO et désactive le compte local.                                                     |
+| `CHAOS_SSO_ISSUERS`                                           | Valeurs `iss` acceptées, séparées par des virgules (obligatoire avec le SSO).                                                                                            |
+| `CHAOS_SESSION_SECRET`                                        | Signe les sessions Chaos. Doit **différer** de `CHAOS_SSO_SECRET` (≥ 32 caractères). Obligatoire avec le SSO ; sinon un secret aléatoire est tiré à chaque démarrage.    |
+| `CHAOS_SESSION_TTL_S`                                         | Durée de session (8 h par défaut).                                                                                                                                       |
+| `CHAOS_ORQEA_URL`                                             | URL d’Orqea de l’environnement : cible du bouton « Revenir sur Orqea » et du crédit (`/auth/mode`). `https://orqea.dev` par défaut ; masqué dans l’iframe de la console. |
+| `CHAOS_FRAME_ANCESTORS`                                       | Origines autorisées à intégrer Chaos en iframe (CSP `frame-ancestors`).                                                                                                  |
+| `CHAOS_HOST` / `CHAOS_PORT`                                   | Adresse d’écoute : loopback **obligatoire**, `127.0.0.1:8090` par défaut.                                                                                                |
+| `CHAOS_TARGETS_FILE`, `CHAOS_SCENARIOS_DIR`, `CHAOS_DATA_DIR` | Emplacement de la config des cibles, des scénarios, du journal et des rapports.                                                                                          |
+| `DOCKER_SOCKET`                                               | Socket Docker (`/var/run/docker.sock` par défaut).                                                                                                                       |
+| `DOCKER_HOST`                                                 | Repli de `DOCKER_SOCKET` : `unix:///chemin` ou `tcp://hôte:port` (port 2375 par défaut). Tout autre schéma est refusé.                                                   |
 
 Le serveur refuse de démarrer si ces règles ne sont pas respectées (secret
 trop court, secrets identiques, hôte non loopback…).

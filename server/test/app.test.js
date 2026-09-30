@@ -18,7 +18,10 @@ describe('HTTP API', () => {
   it('requires authentication except for auth endpoints', async () => {
     const { app } = makeAppEnv();
     expect((await request(app).get('/catalog')).status).toBe(401);
-    expect((await request(app).get('/auth/mode')).body).toEqual({ mode: 'local' });
+    expect((await request(app).get('/auth/mode')).body).toEqual({
+      mode: 'local',
+      orqeaUrl: 'https://orqea.dev',
+    });
     const bad = await request(app)
       .post('/auth/login')
       .send({ username: 'admin', password: 'nope' });

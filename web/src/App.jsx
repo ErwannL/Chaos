@@ -2,7 +2,13 @@ import { useCallback, useEffect, useState } from 'react';
 import { api, session, takeSsoFromHash } from './api.js';
 import { I18nProvider, useI18n } from './i18n.jsx';
 import { Button, ErrorBox } from './components/ui.jsx';
-import { Credits, HoverLogo } from './components/brand.jsx';
+import {
+  BackToOrqea,
+  Credits,
+  DEFAULT_ORQEA_URL,
+  HoverLogo,
+  OrqeaUrl,
+} from './components/brand.jsx';
 import Login from './pages/Login.jsx';
 import Targets from './pages/Targets.jsx';
 import Catalog from './pages/Catalog.jsx';
@@ -13,7 +19,7 @@ import Journal from './pages/Journal.jsx';
 
 const PAGES = ['targets', 'catalog', 'scenarios', 'reports', 'journal'];
 
-function Shell({ user, onLogout }) {
+function Shell({ user }) {
   const { t, lang, setLang } = useI18n();
   const [page, setPage] = useState('targets');
   const [runId, setRunId] = useState(null);
@@ -118,7 +124,7 @@ function Shell({ user, onLogout }) {
         </Button>
         <Credits />
         <span className="text-sm text-neutral-500">{user.name}</span>
-        <Button onClick={onLogout}>{t('logout')}</Button>
+        <BackToOrqea />
         <Button kind="danger" onClick={abortAll}>
           ⏹ {t('abortAll')}
         </Button>
@@ -139,6 +145,7 @@ function Shell({ user, onLogout }) {
 function Root() {
   const [user, setUser] = useState(null);
   const [mode, setMode] = useState(null);
+  const [orqeaUrl, setOrqeaUrl] = useState(DEFAULT_ORQEA_URL);
   const [error, setError] = useState(null);
   const logout = useCallback(() => {
     session.clear();
@@ -158,17 +165,24 @@ function Root() {
       } catch (e) {
         setError(e);
       }
-      setMode((await api('/auth/mode').catch(() => ({ mode: 'local' }))).mode);
+      const m = await api('/auth/mode').catch(() => ({ mode: 'local' }));
+      setMode(m.mode);
+      setOrqeaUrl(m.orqeaUrl ?? DEFAULT_ORQEA_URL);
     })();
     return () => window.removeEventListener('chaos:logout', logout);
   }, [logout]);
 
-  if (user) return <Shell user={user} onLogout={logout} />;
   return (
-    <>
-      <ErrorBox error={error} />
-      {mode && <Login mode={mode} onLogin={setUser} />}
-    </>
+    <OrqeaUrl.Provider value={orqeaUrl}>
+      {user ? (
+        <Shell user={user} />
+      ) : (
+        <>
+          <ErrorBox error={error} />
+          {mode && <Login mode={mode} onLogin={setUser} />}
+        </>
+      )}
+    </OrqeaUrl.Provider>
   );
 }
 

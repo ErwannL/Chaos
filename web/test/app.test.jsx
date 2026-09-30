@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import App from '../src/App.jsx';
@@ -59,7 +60,7 @@ describe('App', () => {
     expect(await screen.findByText('Log in', { selector: 'button' })).toBeInTheDocument();
   });
 
-  it('navigates every page, cancels everything, toggles language and theme, logs out', async () => {
+  it('navigates every page, cancels everything, toggles language and theme, leads back to Orqea (no logout)', async () => {
     session.set('tok');
     const f = mockFetch({ ...BASE, 'POST /abort-all': { aborted: null } });
     render(<App />);
@@ -84,8 +85,43 @@ describe('App', () => {
     fireEvent.click(screen.getByText('FR'));
     expect(await screen.findByText('Tout annuler', { exact: false })).toBeInTheDocument();
     fireEvent.click(screen.getByText('EN'));
-    fireEvent.click(screen.getByText('Log out'));
-    expect(await screen.findByText('Log in', { selector: 'button' })).toBeInTheDocument();
+    expect(screen.queryByText(/log ?out|sign out/i)).toBeNull();
+    const back = screen.getByRole('link', { name: 'Back to Orqea' });
+    expect(back).toHaveAttribute('href', 'https://orqea.dev');
+    expect(back).toHaveAttribute('target', '_top');
+  });
+
+  it('uses the Orqea URL of the environment, and hides the way back inside an iframe', async () => {
+    session.set('tok');
+    mockFetch({
+      ...BASE,
+      'GET /auth/mode': { mode: 'local', orqeaUrl: 'http://localhost:3002' },
+    });
+    const top = vi.spyOn(window, 'top', 'get').mockReturnValue(window.self);
+    const { unmount } = render(<App />);
+    expect(await screen.findByRole('link', { name: 'Back to Orqea' })).toHaveAttribute(
+      'href',
+      'http://localhost:3002',
+    );
+    expect(screen.getByText('Powered by Orqea')).toHaveAttribute('href', 'http://localhost:3002');
+    unmount();
+    top.mockReturnValue({});
+    render(<App />);
+    expect(await screen.findByText('demo')).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Back to Orqea' })).toBeNull();
+    top.mockRestore();
+  });
+
+  it('the SSO notice offers the way back to Orqea', async () => {
+    mockFetch({ ...BASE, 'GET /auth/mode': { mode: 'sso' } });
+    render(<App />);
+    expect(await screen.findByRole('link', { name: 'Back to Orqea' })).toBeInTheDocument();
+  });
+
+  it('animates the logo on keyboard focus too, still under reduced motion', () => {
+    const css = readFileSync('src/index.css', 'utf8');
+    expect(css).toContain(':is(header, form, .brand-head):focus-within .logo-hover .logo-animated');
+    expect(css).toContain('prefers-reduced-motion: reduce');
   });
 
   it('goes from the catalog to a prefilled scenario, runs it live, then opens its report', async () => {
