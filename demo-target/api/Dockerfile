@@ -1,5 +1,5 @@
 # Build context: repository root (npm workspaces share one lockfile).
-FROM node:22-alpine
+FROM node:22.23.4-alpine
 WORKDIR /app
 COPY package.json package-lock.json ./
 COPY server/package.json server/

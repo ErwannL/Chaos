@@ -1,5 +1,5 @@
 # Chaos: API + CLI + built UI, with Chromium for browser faults.
-FROM node:22-bookworm-slim AS build
+FROM node:22.23.4-bookworm-slim AS build
 WORKDIR /app
 COPY package.json package-lock.json ./
 COPY server/package.json server/
